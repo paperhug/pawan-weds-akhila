@@ -36,19 +36,25 @@ const music = document.querySelector('#music');
 const musicButton = document.querySelector('.music-toggle');
 const welcome = document.querySelector('.welcome');
 const enterButton = document.querySelector('.enter-button');
+let musicStartPending = false;
+function startMusicFromEntryGesture() {
+  if (!music.paused || musicStartPending) return;
+  musicStartPending = true;
+  music.play().then(() => {
+    musicButton.setAttribute('aria-pressed', 'true');
+    musicButton.querySelector('.music-label').textContent = 'Pause';
+  }).catch(() => {
+    musicButton.querySelector('.music-label').textContent = 'Add music.mp3';
+  }).finally(() => { musicStartPending = false; });
+}
+enterButton.addEventListener('pointerdown', startMusicFromEntryGesture);
 enterButton.addEventListener('click', async () => {
+  startMusicFromEntryGesture();
   document.body.classList.add('entered');
   welcome.classList.add('is-entered');
   requestAnimationFrame(paintScratchCoating);
   enterButton.disabled = true;
   enterButton.setAttribute('aria-hidden', 'true');
-  try {
-    await music.play();
-    musicButton.setAttribute('aria-pressed', 'true');
-    musicButton.querySelector('.music-label').textContent = 'Pause';
-  } catch {
-    musicButton.querySelector('.music-label').textContent = 'Add music.mp3';
-  }
 });
 musicButton.addEventListener('click', async () => {
   if (music.paused) { try { await music.play(); musicButton.setAttribute('aria-pressed','true'); musicButton.querySelector('.music-label').textContent = 'Pause'; } catch { musicButton.querySelector('.music-label').textContent = 'Add music.mp3'; } }
