@@ -5,7 +5,13 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 
 function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
 function ease(value) { return value * value * (3 - 2 * value); }
+let invitationFrame = 0;
 function updateInvitation() {
+  if (invitationFrame) return;
+  invitationFrame = requestAnimationFrame(renderInvitation);
+}
+function renderInvitation() {
+  invitationFrame = 0;
   const rect = invitation.getBoundingClientRect();
   const artboard = document.querySelector('.invitation-artboard');
   const artboardRect = artboard.getBoundingClientRect();
@@ -21,7 +27,7 @@ function updateInvitation() {
   const startTop = artboardRect.height * .05;
   const maxTop = Math.max(startTop, artboardRect.height - imageHeight - artboardRect.height * .05);
   const targetTop = Math.min(window.innerHeight * .55, maxTop);
-  mandap.style.setProperty('--mandap-top', `${startTop + (targetTop - startTop) * p}px`);
+  mandap.style.setProperty('--mandap-y', `${(targetTop - startTop) * p}px`);
 
   const leaves = clamp((progress - .14) / .2, 0, 1);
   stage.style.setProperty('--leaves-opacity', leaves.toFixed(3));
@@ -36,9 +42,19 @@ const music = document.querySelector('#music');
 const musicButton = document.querySelector('.music-toggle');
 const welcome = document.querySelector('.welcome');
 const enterButton = document.querySelector('.enter-button');
+let musicShouldContinue = false;
+music.loop = false;
+music.addEventListener('ended', () => {
+  window.setTimeout(() => {
+    if (!musicShouldContinue) return;
+    music.currentTime = 0;
+    music.play().catch(() => {});
+  }, 2000);
+});
 let musicStartPending = false;
 function startMusicFromEntryGesture() {
   if (!music.paused || musicStartPending) return;
+  musicShouldContinue = true;
   musicStartPending = true;
   music.play().then(() => {
     musicButton.setAttribute('aria-pressed', 'true');
@@ -57,8 +73,8 @@ enterButton.addEventListener('click', async () => {
   enterButton.setAttribute('aria-hidden', 'true');
 });
 musicButton.addEventListener('click', async () => {
-  if (music.paused) { try { await music.play(); musicButton.setAttribute('aria-pressed','true'); musicButton.querySelector('.music-label').textContent = 'Pause'; } catch { musicButton.querySelector('.music-label').textContent = 'Add music.mp3'; } }
-  else { music.pause(); musicButton.setAttribute('aria-pressed','false'); musicButton.querySelector('.music-label').textContent = 'Music'; }
+  if (music.paused) { musicShouldContinue = true; try { await music.play(); musicButton.setAttribute('aria-pressed','true'); musicButton.querySelector('.music-label').textContent = 'Pause'; } catch { musicButton.querySelector('.music-label').textContent = 'Add music.mp3'; } }
+  else { musicShouldContinue = false; music.pause(); musicButton.setAttribute('aria-pressed','false'); musicButton.querySelector('.music-label').textContent = 'Music'; }
 });
 
 const track = document.querySelector('.carousel-track');
@@ -82,8 +98,10 @@ let scratchDpr = 1;
 let scratching = false;
 let lastScratchPoint = null;
 let scratchInitialAlpha = null;
+let scratchTouched = false;
 
 function paintScratchCoating() {
+  if (scratchTouched || scratchCanvas.classList.contains('is-revealed')) return;
   const rect = scratchCanvas.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
   scratchDpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -158,6 +176,7 @@ function checkScratchReveal() {
 
 scratchCanvas.addEventListener('pointerdown', event => {
   if (scratchCanvas.classList.contains('is-revealed')) return;
+  scratchTouched = true;
   scratching = true;
   lastScratchPoint = null;
   scratchCanvas.setPointerCapture(event.pointerId);
@@ -179,9 +198,11 @@ scratchCanvas.addEventListener('pointercancel', () => { scratching = false; last
 paintScratchCoating();
 scratchTexture.addEventListener('load', paintScratchCoating);
 document.fonts.load('400 24px Sacramento').then(() => {
-  if (!scratchCanvas.classList.contains('is-revealed')) paintScratchCoating();
+  if (!scratchTouched && !scratchCanvas.classList.contains('is-revealed')) paintScratchCoating();
 });
-addEventListener('resize', paintScratchCoating);
+addEventListener('resize', () => {
+  if (!scratchTouched && !scratchCanvas.classList.contains('is-revealed')) paintScratchCoating();
+});
 
 const countdownDeadline = new Date('2026-12-14T03:44:00+05:30').getTime();
 const countdownFields = {
