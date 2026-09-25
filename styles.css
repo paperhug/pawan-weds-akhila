@@ -8,9 +8,9 @@ img { display:block; max-width:100%; }
 body:not(.entered) .music-toggle { display:none; }
 body:not(.entered) .invitation, body:not(.entered) .events, body:not(.entered) .countdown { display:none; }
 .music-toggle span:first-child { font-size:1rem; margin-right:.28rem; }
-.welcome { position:relative; width:100%; min-height:100svh; aspect-ratio:9 / 16; overflow:visible; container-type:inline-size; background:#fffcf8; }
+.welcome { position:relative; width:100%; min-height:100svh; aspect-ratio:9 / 16; overflow:visible; container-type:inline-size; background:#fff; }
 .welcome::after { content:none; }
-.welcome-artboard { position:relative; width:100%; height:100%; overflow:hidden; isolation:isolate; container-type:size; background:#fffcf8; }
+.welcome-artboard { position:relative; width:100%; height:100%; overflow:hidden; isolation:isolate; container-type:size; background:#fff; }
 .welcome-artboard::after { content:""; position:absolute; z-index:12; inset:0; border:clamp(8px,2.6cqw,14px) solid #809b43; pointer-events:none; }
 .welcome-hanging { position:absolute; top:0; left:0; width:100%; height:15%; object-fit:fill; }
 .welcome-parrot { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; pointer-events:none; opacity:0; transform:translate(2%, -18%); transition:transform 1.7s cubic-bezier(.18,.67,.27,1),opacity .45s ease .2s; }
