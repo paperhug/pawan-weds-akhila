@@ -39,6 +39,7 @@ const enterButton = document.querySelector('.enter-button');
 enterButton.addEventListener('click', async () => {
   document.body.classList.add('entered');
   welcome.classList.add('is-entered');
+  requestAnimationFrame(paintScratchCoating);
   enterButton.disabled = true;
   enterButton.setAttribute('aria-hidden', 'true');
   try {
@@ -74,6 +75,7 @@ scratchTexture.src = 'watercolor-banana-leaf.png?v=3';
 let scratchDpr = 1;
 let scratching = false;
 let lastScratchPoint = null;
+let scratchInitialAlpha = null;
 
 function paintScratchCoating() {
   const rect = scratchCanvas.getBoundingClientRect();
@@ -102,6 +104,9 @@ function paintScratchCoating() {
   scratchContext.shadowColor = 'transparent';
   scratchContext.shadowBlur = 0;
   scratchContext.shadowOffsetY = 0;
+  const paintedAlpha = scratchContext.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height).data;
+  scratchInitialAlpha = new Uint8Array(scratchCanvas.width * scratchCanvas.height);
+  for (let i = 0; i < scratchInitialAlpha.length; i++) scratchInitialAlpha[i] = paintedAlpha[i * 4 + 3];
 }
 
 function scratchPoint(event) {
@@ -133,8 +138,11 @@ function checkScratchReveal() {
   let cleared = 0;
   for (let y = 3; y < scratchCanvas.height; y += step) {
     for (let x = 3; x < scratchCanvas.width; x += step) {
-      checked++;
-      if (pixels[(y * scratchCanvas.width + x) * 4 + 3] < 80) cleared++;
+      const pixel = y * scratchCanvas.width + x;
+      if (scratchInitialAlpha && scratchInitialAlpha[pixel] >= 80) {
+        checked++;
+        if (pixels[pixel * 4 + 3] < 80) cleared++;
+      }
     }
   }
   if (cleared / checked > .4) scratchCanvas.classList.add('is-revealed');
