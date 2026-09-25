@@ -6,26 +6,38 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
 function ease(value) { return value * value * (3 - 2 * value); }
 let invitationFrame = 0;
+let invitationMetrics = null;
+function measureInvitation() {
+  const artboard = document.querySelector('.invitation-artboard');
+  const welcome = document.querySelector('.welcome');
+  const artboardWidth = artboard.clientWidth;
+  const artboardHeight = artboard.offsetHeight;
+  const imageRatio = mandap.naturalWidth && mandap.naturalHeight ? mandap.naturalHeight / mandap.naturalWidth : 1387 / 1028;
+  const imageHeight = artboardWidth * 1.15 * imageRatio * 0.84;
+  invitationMetrics = {
+    top: invitation.getBoundingClientRect().top + window.scrollY,
+    height: invitation.offsetHeight,
+    imageHeight,
+    artboardHeight,
+    initialOverlap: Math.max(0, window.innerHeight - welcome.offsetHeight),
+  };
+  updateInvitation();
+}
 function updateInvitation() {
   if (invitationFrame) return;
   invitationFrame = requestAnimationFrame(renderInvitation);
 }
 function renderInvitation() {
   invitationFrame = 0;
-  const rect = invitation.getBoundingClientRect();
-  const artboard = document.querySelector('.invitation-artboard');
-  const artboardRect = artboard.getBoundingClientRect();
-  const welcome = document.querySelector('.welcome');
-  const initialOverlap = Math.max(0, window.innerHeight - welcome.getBoundingClientRect().height);
-  const visiblePageHeight = Math.max(0, window.innerHeight - rect.top - initialOverlap);
-  const imageRatio = mandap.naturalWidth && mandap.naturalHeight ? mandap.naturalHeight / mandap.naturalWidth : 1387 / 1028;
-  const imageHeight = artboardRect.width * 1.15 * imageRatio * 0.84;
-  const movementDistance = Math.max(1, invitation.offsetHeight - imageHeight);
+  if (!invitationMetrics) return;
+  const { top, height, imageHeight, artboardHeight, initialOverlap } = invitationMetrics;
+  const visiblePageHeight = Math.max(0, window.innerHeight - (top - window.scrollY) - initialOverlap);
+  const movementDistance = Math.max(1, height - imageHeight);
   const progress = clamp((visiblePageHeight - imageHeight) / movementDistance, 0, 1);
   const p = reducedMotion ? 1 : ease(progress);
 
-  const startTop = artboardRect.height * .05;
-  const maxTop = Math.max(startTop, artboardRect.height - imageHeight - artboardRect.height * .05);
+  const startTop = artboardHeight * .05;
+  const maxTop = Math.max(startTop, artboardHeight - imageHeight - artboardHeight * .05);
   const targetTop = Math.min(window.innerHeight * .55, maxTop);
   mandap.style.setProperty('--mandap-y', `${(targetTop - startTop) * p}px`);
 
@@ -36,7 +48,9 @@ function renderInvitation() {
   stage.style.setProperty('--copy-y', `${22 * (1 - ease(copy))}px`);
 }
 addEventListener('scroll', updateInvitation, { passive:true });
-addEventListener('resize', updateInvitation); updateInvitation();
+addEventListener('resize', measureInvitation);
+mandap.addEventListener('load', measureInvitation, { once:true });
+measureInvitation();
 
 const music = document.querySelector('#music');
 const musicButton = document.querySelector('.music-toggle');
