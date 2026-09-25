@@ -145,7 +145,10 @@ function checkScratchReveal() {
       }
     }
   }
-  if (cleared / checked > .4) scratchCanvas.classList.add('is-revealed');
+  if (checked && cleared / checked > .4) {
+    scratchCanvas.classList.add('is-revealed');
+    scratchCanvas.closest('.scratch-date-wrap').classList.add('is-revealed');
+  }
 }
 
 scratchCanvas.addEventListener('pointerdown', event => {

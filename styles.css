@@ -6,8 +6,9 @@ body { margin:0; font-family:Forum, Georgia, serif; color:var(--red); overflow-x
 img { display:block; max-width:100%; }
 .music-toggle { position:fixed; z-index:20; right:1rem; top:1rem; border:1px solid rgba(118,1,0,.25); border-radius:999px; padding:.65rem .85rem; background:rgba(255,251,247,.9); color:var(--red); font:600 .75rem 'League Spartan',sans-serif; box-shadow:0 3px 14px rgba(65,20,10,.12); backdrop-filter:blur(8px); }
 body:not(.entered) .music-toggle { display:none; }
+body:not(.entered) .invitation, body:not(.entered) .events, body:not(.entered) .countdown { display:none; }
 .music-toggle span:first-child { font-size:1rem; margin-right:.28rem; }
-.welcome { position:relative; width:100%; aspect-ratio:9 / 16; overflow:visible; container-type:inline-size; background:#fffcf8; }
+.welcome { position:relative; width:100%; min-height:100svh; aspect-ratio:9 / 16; overflow:visible; container-type:inline-size; background:#fffcf8; }
 .welcome::after { content:none; }
 .welcome-artboard { position:relative; width:100%; height:100%; overflow:hidden; isolation:isolate; container-type:size; background:#fffcf8; }
 .welcome-artboard::after { content:""; position:absolute; z-index:12; inset:0; border:clamp(8px,2.6cqw,14px) solid #809b43; pointer-events:none; }
@@ -46,7 +47,8 @@ body:not(.entered) .music-toggle { display:none; }
 .events { padding:2.5rem 0 0; background:var(--cream); }
 .scratch-card { width:min(94%, 600px); margin:0 auto 2.2rem; padding:0; text-align:center; }
 .scratch-date-wrap { position:relative; display:grid; aspect-ratio:1774 / 887; place-items:center; overflow:visible; background:var(--cream); }
-.scratch-date { margin:0; padding:.85rem .5rem; color:#8d1710; font-family:"Amoresa", Allura, cursive; font-size:clamp(1.7rem,7vw,2.6rem); line-height:1.15; }
+.scratch-date { margin:0; padding:.85rem .5rem; color:#8d1710; font-family:"Amoresa", Allura, cursive; font-size:clamp(1.7rem,7vw,2.6rem); line-height:1.15; opacity:0; transition:opacity .35s ease; }
+.scratch-date-wrap.is-revealed .scratch-date { opacity:1; }
 .scratch-layer { position:absolute; z-index:1; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair; }
 .scratch-layer.is-revealed { opacity:0; pointer-events:none; transition:opacity .55s ease; }
 .scratch-hint { margin:.65rem 0 0; color:#96734e; font:500 .68rem 'League Spartan',sans-serif; letter-spacing:.04em; }
