@@ -71,7 +71,7 @@ track.addEventListener('touchend', event => { const delta = event.changedTouches
 const scratchCanvas = document.querySelector('.scratch-layer');
 const scratchContext = scratchCanvas.getContext('2d');
 const scratchTexture = new Image();
-scratchTexture.src = 'watercolor-banana-leaf.png?v=3';
+scratchTexture.src = 'watercolor-banana-leaf-optimized.png?v=1';
 let scratchDpr = 1;
 let scratching = false;
 let lastScratchPoint = null;
@@ -85,6 +85,8 @@ function paintScratchCoating() {
   scratchCanvas.height = Math.round(rect.height * scratchDpr);
   scratchContext.setTransform(scratchDpr, 0, 0, scratchDpr, 0, 0);
   scratchContext.globalCompositeOperation = 'source-over';
+  scratchContext.fillStyle = '#fffbf7';
+  scratchContext.fillRect(0, 0, rect.width, rect.height);
   if (scratchTexture.complete && scratchTexture.naturalWidth) {
     const scale = Math.min(rect.width / scratchTexture.naturalWidth, rect.height / scratchTexture.naturalHeight);
     const width = scratchTexture.naturalWidth * scale;
@@ -145,10 +147,7 @@ function checkScratchReveal() {
       }
     }
   }
-  if (checked && cleared / checked > .4) {
-    scratchCanvas.classList.add('is-revealed');
-    scratchCanvas.closest('.scratch-date-wrap').classList.add('is-revealed');
-  }
+  if (checked && cleared / checked > .9) scratchCanvas.classList.add('is-revealed');
 }
 
 scratchCanvas.addEventListener('pointerdown', event => {

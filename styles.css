@@ -47,8 +47,7 @@ body:not(.entered) .invitation, body:not(.entered) .events, body:not(.entered) .
 .events { padding:2.5rem 0 0; background:var(--cream); }
 .scratch-card { width:min(94%, 600px); margin:0 auto 2.2rem; padding:0; text-align:center; }
 .scratch-date-wrap { position:relative; display:grid; aspect-ratio:1774 / 887; place-items:center; overflow:visible; background:var(--cream); }
-.scratch-date { margin:0; padding:.85rem .5rem; color:#8d1710; font-family:"Amoresa", Allura, cursive; font-size:clamp(1.7rem,7vw,2.6rem); line-height:1.15; opacity:0; transition:opacity .35s ease; }
-.scratch-date-wrap.is-revealed .scratch-date { opacity:1; }
+.scratch-date { margin:0; padding:.85rem .5rem; color:#8d1710; font-family:"Amoresa", Allura, cursive; font-size:clamp(1.7rem,7vw,2.6rem); line-height:1.15; }
 .scratch-layer { position:absolute; z-index:1; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair; }
 .scratch-layer.is-revealed { opacity:0; pointer-events:none; transition:opacity .55s ease; }
 .scratch-hint { margin:.65rem 0 0; color:#96734e; font:500 .68rem 'League Spartan',sans-serif; letter-spacing:.04em; }
