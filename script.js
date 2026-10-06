@@ -8,6 +8,12 @@ function ease(value) { return value * value * (3 - 2 * value); }
 let invitationFrame = 0;
 let invitationMetrics = null;
 function measureInvitation() {
+  // The invitation is display:none on the welcome screen. Do not cache its
+  // zero-sized hidden geometry; it is measured again as soon as entry reveals it.
+  if (!invitation.getClientRects().length) {
+    invitationMetrics = null;
+    return;
+  }
   const artboard = document.querySelector('.invitation-artboard');
   const welcome = document.querySelector('.welcome');
   const artboardWidth = artboard.clientWidth;
@@ -81,6 +87,7 @@ enterButton.addEventListener('pointerdown', startMusicFromEntryGesture);
 enterButton.addEventListener('click', async () => {
   startMusicFromEntryGesture();
   document.body.classList.add('entered');
+  measureInvitation();
   welcome.classList.add('is-entered');
   requestAnimationFrame(paintScratchCoating);
   enterButton.disabled = true;
